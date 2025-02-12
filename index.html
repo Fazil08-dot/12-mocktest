@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics Mock Test</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #2ecc71;
+            --background-color: #ecf0f1;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 95%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .header {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            padding: 2rem;
+            color: white;
+            text-align: center;
+        }
+
+        .timer {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50px;
+            font-size: 1.2em;
+        }
+
+        .question-container {
+            padding: 2rem;
+        }
+
+        .question {
+            font-size: 1.2em;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-left: 4px solid var(--secondary-color);
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 0 10px 10px 0;
+        }
+
+        .options {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .option {
+            padding: 1rem 1.5rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option:hover {
+            background: rgba(52, 152, 219, 0.1);
+            border-color: var(--secondary-color);
+            transform: translateX(10px);
+        }
+
+        .option.correct {
+            background: var(--success-color);
+            color: white;
+            border-color: var(--success-color);
+        }
+
+        .option.incorrect {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+
+        .button:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .result {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Physics Mock Test</h1>
+            <div class="timer">
+                <i class="fas fa-clock"></i>
+                Time Remaining: <span id="time">60</span>s
+            </div>
+        </div>
+        <div class="question-container">
+            <div class="question" id="question"></div>
+            <div class="options" id="options"></div>
+            <button class="button" id="next" style="display: none;">
+                <i class="fas fa-arrow-right"></i>
+                Next Question
+            </button>
+        </div>
+        <div class="result" id="result" style="display: none;">
+            <h2>Test Completed!</h2>
+            <p>Your Score: <span id="score"></span>/20</p>
+            <button class="button" id="retry">
+                <i class="fas fa-redo"></i>
+                Retry Test
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let questions = [
+            { question: "The dimensional formula for the universal gas constant (R) is:", options: ["[M L^2 T^-2 θ^-1]", "[M L^2 T^-2 θ^-1]", "[M^1 L^2 T^-2 θ^-1]", "[M^1 L^2 T^-2 θ]"], answer: "[M L^2 T^-2 θ^-1]" },
+            { question: "The speed of light in vacuum is 3×10^8 m/s. Its dimensional formula is:", options: ["[M^0 L^1 T^-1]", "[M^0 L^1 T^-2]", "[M^0 L^2 T^-3]", "[M^0 L^1 T^0]"], answer: "[M^0 L^1 T^-1]" },
+            { question: "Which of the following quantities has the same dimensions as energy per unit volume?", options: ["Electric field", "Gravitational potential", "Pressure", "Heat capacity"], answer: "Pressure" },
+            { question: "Which of the following is the dimensional formula of the refractive index?", options: ["[M^0 L^0 T^0 θ^0]", "[M^0 L^1 T^-1 θ^0]", "[M^0 L^0 T^0 θ^1]", "[M^1 L^2 T^-1 θ^0]"], answer: "[M^0 L^0 T^0 θ^0]" },
+            { question: "The dimensions of Young’s modulus are:", options: ["[M L^-1 T^-2]", "[M L^1 T^-2]", "[M L^0 T^-2]", "[M^1 L^-2 T^-2]"], answer: "[M L^-1 T^-2]" },
+            { question: "The dimensional formula for surface tension is:", options: ["[M T^-2]", "[M T^-2 L^-1]", "[M^1 L^1 T^-2]", "[M^1 L^-1 T^-2]"], answer: "[M T^-2 L^-1]" },
+            { question: "Which of the following statements is correct regarding significant figures?", options: ["The sum of 0.0034 and 0.5678 gives 0.5712 with 3 significant figures.", "In the division of 350 by 0.08, the result should have 2 significant figures.", "The product of 5.2 × 10^-3 and 2.1 × 10^2 gives 1.092 with 4 significant figures.", "The number 0.0008765 has 5 significant figures."], answer: "In the division of 350 by 0.08, the result should have 2 significant figures." },
+            { question: "Which of the following is dimensionally consistent with the equation for Coulomb's law?", options: ["F = k * (q1 * q2) / r^2, where k has dimensions [M^1 L^3 T^-4 A^-2]", "F = k * (q1 * q2) / r, where k has dimensions [M^1 L^2 T^-4 A^-2]", "F = k * (q1 * q2) / r^3, where k has dimensions [M^1 L^3 T^-4 A^-2]", "F = k * (q1 * q2) / r^2, where k has dimensions [M^0 L^3 T^-4 A^-2]"], answer: "F = k * (q1 * q2) / r^2, where k has dimensions [M^1 L^3 T^-4 A^-2]" },
+            { question: "If ρ is the density of a substance, v is its velocity, and A is the cross-sectional area, the dimensional formula for force in terms of these quantities is:", options: ["[M L^0 T^-1]", "[M L^-1 T^-2]", "[M L^2 T^-2]", "[M L^1 T^-2]"], answer: "[M L^-1 T^-2]" },
+            { question: "The dimensional formula of surface charge density is:", options: ["[M^1 L^-2 T^-2 A^1]", "[M^0 L^-2 T^0 A^1]", "[M^1 L^-2 T^0 A^1]", "[M^0 L^-2 T^-2 A^1]"], answer: "[M^1 L^-2 T^0 A^1]" },
+            {
+                  question: "A car accelerates from rest with a uniform acceleration of 2 m/s². How much time will it take to cover a distance of 100 meters?",
+                  options: ["10 seconds", "12 seconds", "15 seconds", "20 seconds"],
+                  answer: "12 seconds"
+              },
+              {
+                  question: "A stone is thrown vertically upward with a velocity of 30 m/s. What is the time taken to reach the maximum height? (Assume g = 10 m/s²)",
+                  options: ["3 seconds", "5 seconds", "6 seconds", "2 seconds"],
+                  answer: "3 seconds"
+              },
+              {
+                  question: "A body is dropped from a height of 80 meters. How long does it take to hit the ground? (Assume g = 10 m/s²)",
+                  options: ["3 seconds", "4 seconds", "6 seconds", "8 seconds"],
+                  answer: "4 seconds"
+              },
+              {
+                  question: "A body is moving with a velocity given by v = 8t² + 2. What is the acceleration at t = 2 seconds?",
+                  options: ["32 m/s²", "16 m/s²", "18 m/s²", "10 m/s²"],
+                  answer: "32 m/s²"
+              },
+              {
+                  question: "A car accelerates uniformly from 0 to 20 m/s in 10 seconds. What is the distance covered during this time?",
+                  options: ["100 meters", "150 meters", "200 meters", "250 meters"],
+                  answer: "150 meters"
+              },
+              {
+                  question: "A body is thrown upward with a velocity of 40 m/s. What is the maximum height reached by the body? (Assume g = 10 m/s²)",
+                  options: ["80 meters", "160 meters", "200 meters", "400 meters"],
+                  answer: "160 meters"
+              },
+              {
+                  question: "A car moves along a straight path with an acceleration of 2 m/s². If the initial velocity is 4 m/s, what will be the velocity after 5 seconds?",
+                  options: ["14 m/s", "12 m/s", "10 m/s", "16 m/s"],
+                  answer: "14 m/s"
+              },
+              {
+                  question: "A stone is dropped from a height of 25 meters. How much time will it take to reach the ground?",
+                  options: ["2 seconds", "3 seconds", "4 seconds", "5 seconds"],
+                  answer: "2 seconds"
+              },
+              {
+                  question: "A body is moving with a velocity v = 5t² − 3t + 2. What is the displacement at t = 3 seconds?",
+                  options: ["35 meters", "40 meters", "45 meters", "50 meters"],
+                  answer: "40 meters"
+              },
+              {
+                  question: "A body moves along a straight line with a velocity given by v = 7t + 5. What is the displacement after 4 seconds?",
+                  options: ["70 meters", "80 meters", "90 meters", "100 meters"],
+                  answer: "80 meters"
+              },
+              {
+                  question: "A body moves with an acceleration of 5 m/s² and covers a distance of 200 meters in 10 seconds. What was its initial velocity?",
+                  options: ["5 m/s", "10 m/s", "15 m/s", "20 m/s"],
+                  answer: "10 m/s"
+              },
+              {
+                  question: "A body is thrown upward with an initial velocity of 25 m/s. What will be its velocity after 3 seconds? (Assume g = 10 m/s²)",
+                  options: ["5 m/s", "10 m/s", "15 m/s", "20 m/s"],
+                  answer: "5 m/s"
+              },
+              {
+                  question: "A body is dropped from a height of 45 meters. What will be its velocity just before hitting the ground? (Assume g = 10 m/s²)",
+                  options: ["25 m/s", "30 m/s", "35 m/s", "40 m/s"],
+                  answer: "30 m/s"
+              },
+              {
+                  question: "A stone is thrown vertically upward with a velocity of 15 m/s. How much time will it take to reach the maximum height? (Assume g = 10 m/s²)",
+                  options: ["2 seconds", "1.5 seconds", "3 seconds", "4 seconds"],
+                  answer: "2 seconds"
+              },
+              {
+                  question: "A body accelerates uniformly from 0 to 30 m/s in 10 seconds. What is the average velocity during this motion?",
+                  options: ["12 m/s", "15 m/s", "18 m/s", "20 m/s"],
+                  answer: "15 m/s"
+              },
+              {
+                  question: "A car is moving with a velocity v = 10t - 4, where t is the time in seconds. What is the displacement after 3 seconds?",
+                  options: ["20 meters", "25 meters", "30 meters", "35 meters"],
+                  answer: "25 meters"
+              },
+              {
+                  question: "A ball is dropped from a height of 200 meters. How long will it take to reach the ground? (Assume g = 10 m/s²)",
+                  options: ["6 seconds", "7 seconds", "8 seconds", "9 seconds"],
+                  answer: "6 seconds"
+              },
+              {
+                  question: "A stone is dropped from a height of 100 meters. What will be its velocity just before it hits the ground? (Assume g = 10 m/s²)",
+                  options: ["30 m/s", "35 m/s", "40 m/s", "45 m/s"],
+                  answer: "40 m/s"
+              },
+              {
+                  question: "A body moves with a velocity v = 4t³ - 5t + 2, where t is in seconds. What is the acceleration at t = 1 second?",
+                  options: ["12 m/s²", "15 m/s²", "18 m/s²", "10 m/s²"],
+                  answer: "12 m/s²"
+              },
+              {
+                  question: "A train starts from rest and accelerates uniformly at 2 m/s² for 10 seconds. What is the distance covered by the train in this time?",
+                  options: ["100 meters", "120 meters", "150 meters", "200 meters"],
+                  answer: "100 meters"
+              },
+              {
+                  question: "A projectile is launched at an angle of 60° with an initial velocity of 40 m/s. What is the time of flight of the projectile? (Assume g = 10 m/s²)",
+                  options: ["8 seconds", "6 seconds", "10 seconds", "12 seconds"],
+                  answer: "6 seconds"
+              },
+              {
+                  question: "A car travels in a straight line with an acceleration of 3 m/s². If the car starts from rest, what is its velocity after 10 seconds?",
+                  options: ["20 m/s", "25 m/s", "30 m/s", "35 m/s"],
+                  answer: "30 m/s"
+              },
+              {
+                  question: "A body starts from rest and moves with a constant acceleration of 5 m/s². What is the velocity of the body after 4 seconds?",
+                  options: ["15 m/s", "20 m/s", "25 m/s", "30 m/s"],
+                  answer: "20 m/s"
+              },
+              {
+                  question: "A body travels a distance of 200 meters in 10 seconds. What is its average velocity?",
+                  options: ["15 m/s", "20 m/s", "25 m/s", "30 m/s"],
+                  answer: "20 m/s"
+              },
+              {
+                  question: "A ball is thrown vertically upward with a velocity of 20 m/s. What will be its velocity after 2 seconds? (Assume g = 10 m/s²)",
+                  options: ["10 m/s", "0 m/s", "20 m/s", "-10 m/s"],
+                  answer: "10 m/s"
+              },
+              {
+                  question: "A body moves with a velocity v = 6t + 2, where t is time in seconds. What is the displacement at t = 3 seconds?",
+                  options: ["30 meters", "40 meters", "50 meters", "60 meters"],
+                  answer: "40 meters"
+              },
+              {
+                  question: "A body starts from rest and moves with a uniform acceleration of 5 m/s². What is the velocity after 6 seconds?",
+                  options: ["20 m/s", "25 m/s", "30 m/s", "35 m/s"],
+                  answer: "30 m/s"
+              },
+              {
+                  question: "A body moves with a velocity given by v = 3t² + 2t − 1. What is the acceleration at t = 2 seconds?",
+                  options: ["6 m/s²", "10 m/s²", "12 m/s²", "15 m/s²"],
+                  answer: "10 m/s²"
+              },
+              {
+                  question: "A stone is thrown upwards with a velocity of 30 m/s. What is the total time taken for the stone to come back to the ground? (Assume g = 10 m/s²)",
+                  options: ["6 seconds", "5 seconds", "8 seconds", "10 seconds"],
+                  answer: "6 seconds"
+              },
+              {
+                  question: "A body moves with a velocity v = 6t² − 4t + 3. What is the velocity at t = 5 seconds?",
+                  options: ["120 m/s", "140 m/s", "150 m/s", "160 m/s"],
+                  answer: "150 m/s"
+              },
+              {
+                  question: "A body moves with a uniform acceleration of 2 m/s² for 5 seconds. What is the distance covered by the body?",
+                  options: ["20 meters", "25 meters", "30 meters", "35 meters"],
+                  answer: "25 meters"
+              },
+              {
+                  question: "A ball is dropped from a height of 80 meters. How long will it take to reach the ground? (Assume g = 10 m/s²)",
+                  options: ["4 seconds", "5 seconds", "6 seconds", "7 seconds"],
+                  answer: "4 seconds"
+              },
+              {
+                  question: "A body moves with a velocity given by v = 4t³ + 3t − 2. What is the acceleration at t = 2 seconds?",
+                  options: ["56 m/s²", "60 m/s²", "64 m/s²", "70 m/s²"],
+                  answer: "56 m/s²"
+              },
+              {
+                  question: "A body is projected with a velocity of 40 m/s at an angle of 30° with the horizontal. What will be its range? (Assume g = 10 m/s²)",
+                  options: ["100 meters", "120 meters", "140 meters", "160 meters"],
+                  answer: "120 meters"
+              },
+              {
+                  question: "A ball is thrown upward with a velocity of 25 m/s. What will be the time taken to return to the ground? (Assume g = 10 m/s²)",
+                  options: ["5 seconds", "6 seconds", "8 seconds", "10 seconds"],
+                  answer: "5 seconds"
+              },
+              {
+                  question: "A car accelerates uniformly from rest to a speed of 25 m/s in 10 seconds. What is the total distance traveled during this time?",
+                  options: ["100 meters", "120 meters", "125 meters", "150 meters"],
+                  answer: "125 meters"
+              },
+              {
+                  question: "A body accelerates uniformly from 5 m/s to 25 m/s in 10 seconds. What is the acceleration of the body?",
+                  options: ["2 m/s²", "3 m/s²", "4 m/s²", "5 m/s²"],
+                  answer: "2 m/s²"
+              },
+              {
+                  question: "A body is thrown vertically upward with a velocity of 10 m/s. What is the velocity at the maximum height? (Assume g = 10 m/s²)",
+                  options: ["0 m/s", "5 m/s", "10 m/s", "20 m/s"],
+                  answer: "0 m/s"
+              },
+              {
+                  question: "A stone is thrown vertically upward with an initial velocity of 12 m/s. What will be its maximum height? (Assume g = 10 m/s²)",
+                  options: ["7 meters", "8 meters", "9 meters", "10 meters"],
+                  answer: "8 meters"
+              },
+              {
+                  question: "A body moves with a velocity given by v = 5t² + 4t + 1. What is the displacement at t = 3 seconds?",
+                  options: ["40 meters", "50 meters", "60 meters", "70 meters"],
+                  answer: "60 meters"
+              },
+              {
+                  question: "A body moves with a velocity given by v = 3t² + 2t − 1. What is the acceleration at t = 2 seconds?",
+                  options: ["6 m/s²", "10 m/s²", "12 m/s²", "15 m/s²"],
+                  answer: "10 m/s²"
+              },
+              {
+                  question: "A stone is thrown upwards with a velocity of 30 m/s. What is the total time taken for the stone to come back to the ground? (Assume g = 10 m/s²)",
+                  options: ["6 seconds", "5 seconds", "8 seconds", "10 seconds"],
+                  answer: "6 seconds"
+              },
+              {
+                  question: "A body moves with a velocity v = 6t² − 4t + 3. What is the velocity at t = 5 seconds?",
+                  options: ["120 m/s", "140 m/s", "150 m/s", "160 m/s"],
+                  answer: "150 m/s"
+              },
+              {
+                  question: "A body moves with a uniform acceleration of 2 m/s² for 5 seconds. What is the distance covered by the body?",
+                  options: ["20 meters", "25 meters", "30 meters", "35 meters"],
+                  answer: "25 meters"
+              },
+              {
+                  question: "A ball is dropped from a height of 80 meters. How long will it take to reach the ground? (Assume g = 10 m/s²)",
+                  options: ["4 seconds", "5 seconds", "6 seconds", "7 seconds"],
+                  answer: "4 seconds"
+              },
+              {
+                  question: "A body moves with a velocity given by v = 4t³ + 3t − 2. What is the acceleration at t = 2 seconds?",
+                  options: ["56 m/s²", "60 m/s²", "64 m/s²", "70 m/s²"],
+                  answer: "56 m/s²"
+              },
+              {
+                  question: "A body is projected with a velocity of 40 m/s at an angle of 30° with the horizontal. What will be its range? (Assume g = 10 m/s²)",
+                  options: ["100 meters", "120 meters", "140 meters", "160 meters"],
+                  answer: "120 meters"
+              },
+              {
+                  question: "A ball is thrown upward with a velocity of 25 m/s. What will be the time taken to return to the ground? (Assume g = 10 m/s²)",
+                  options: ["5 seconds", "6 seconds", "8 seconds", "10 seconds"],
+                  answer: "5 seconds"
+              },
+              {
+                  question: "A car accelerates uniformly from rest to a speed of 25 m/s in 10 seconds. What is the total distance traveled during this time?",
+                  options: ["100 meters", "120 meters", "125 meters", "150 meters"],
+                  answer: "125 meters"
+              },
+              {
+                  question: "A body accelerates uniformly from 5 m/s to 25 m/s in 10 seconds. What is the acceleration of the body?",
+                  options: ["2 m/s²", "3 m/s²", "4 m/s²", "5 m/s²"],
+                  answer: "2 m/s²"
+              },
+              {
+                  question: "A body is thrown vertically upward with a velocity of 10 m/s. What is the velocity at the maximum height? (Assume g = 10 m/s²)",
+                  options: ["0 m/s", "5 m/s", "10 m/s", "20 m/s"],
+                  answer: "0 m/s"
+              },
+              {
+                  question: "A stone is thrown vertically upward with an initial velocity of 12 m/s. What will be its maximum height? (Assume g = 10 m/s²)",
+                  options: ["7 meters", "8 meters", "9 meters", "10 meters"],
+                  answer: "8 meters"
+              },
+              {
+                  question: "A body moves with a velocity given by v = 5t² + 4t + 1. What is the displacement at t = 3 seconds?",
+                  options: ["40 meters", "50 meters", "60 meters", "70 meters"],
+                  answer: "60 meters"
+              }
+              
+          ];
+              
+
+        let currentQuestion = 0;
+        let score = 0;
+        let timer;
+        
+        function loadQuestion() {
+            const questionElement = document.getElementById('question');
+            const optionsElement = document.getElementById('options');
+            const timeElement = document.getElementById('time');
+            
+            const current = questions[currentQuestion];
+            
+            questionElement.textContent = current.question;
+            optionsElement.innerHTML = '';
+            
+            current.options.forEach(option => {
+                const optionElement = document.createElement('div');
+                optionElement.classList.add('option');
+                optionElement.textContent = option;
+                optionElement.addEventListener('click', () => checkAnswer(option));
+                optionsElement.appendChild(optionElement);
+            });
+            
+            timeElement.textContent = 60;
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timer);  // Clear the previous timer before starting a new one
+            let timeLeft = 60;
+            timer = setInterval(() => {
+                document.getElementById('time').textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    nextQuestion();
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        function checkAnswer(selected) {
+            const current = questions[currentQuestion];
+            const options = document.querySelectorAll('.option');
+            
+            options.forEach(option => {
+                option.classList.add(option.textContent === current.answer ? 'correct' : 'incorrect');
+                option.style.pointerEvents = 'none';
+            });
+            
+            if (selected === current.answer) score++;
+
+            document.getElementById('next').style.display = 'inline-block';
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                loadQuestion();
+                document.getElementById('next').style.display = 'none';
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.querySelector('.question-container').style.display = 'none';
+            document.getElementById('retry').style.display = 'inline-block';
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('score').textContent = score;
+        }
+
+        function restartTest() {
+            currentQuestion = 0;
+            score = 0;
+            document.querySelector('.question-container').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+            loadQuestion();
+        }
+
+        loadQuestion();
+
+        document.getElementById('retry').addEventListener('click', restartTest);
+        document.getElementById('next').addEventListener('click', nextQuestion);
+    </script>
+</body>
+</html>
